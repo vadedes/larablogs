@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    //use type hinting so laravel can automatically lookup the correct post
+    //second arg on return is the data we're passing to the route
+    public function viewSinglePost (Post $post) {
+        return view('single-post', ['post' => $post]);
+    }
+
 
     public function storeNewPost(Request $request) {
         // validate the incoming data first
@@ -23,8 +29,8 @@ class PostController extends Controller
         $incomingFields['user_id'] = auth()->id();
 
         //saving to db logic here
-        Post::create($incomingFields);
-        return redirect('/');
+        $newPost = Post::create($incomingFields);
+        return redirect("/post/{$newPost->id}")->with('success', 'New post successfully created');
     }
 
     public function showCreateForm () {
