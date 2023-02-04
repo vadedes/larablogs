@@ -16,7 +16,8 @@
       </p>
 
       <div class="body-content">
-        {{$post->body}}
+        {{-- instead of double curly brackets, use single curly + !! on both ends to tell blade that we don't want protection here/escape, just literally render it as HTML, this setup is similar to using dangerously set HTML in javascript - try to minimize usage of this method as much as possible --}}
+        {!! $post->body !!}
       </div>
     </div>
 </x-layout>
