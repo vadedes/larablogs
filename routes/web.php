@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -14,6 +15,11 @@ use App\Http\Controllers\UserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+//admins only route
+Route::get('admin-dashboard', function(){
+    return 'Only admins are allowed to view this route';
+})->middleware('can:visitAdminPages');
 
 // User Related Routes
 Route::get('/', [UserController::class, "showCorrectHomepage"])->name('login');
