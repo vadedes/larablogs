@@ -8,9 +8,18 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+
+    public function delete(Post $post) {
+        $post->delete();
+        return redirect('/profile/' . auth()->user()->username)->with('success', 'Post successfully deleted.');
+    }
+
     //use type hinting so laravel can automatically lookup the correct post
     //second arg on return is the data we're passing to the route
     public function viewSinglePost (Post $post) {
+        //check who is the author and only allow author see edit and delete buttons
+        
+        
         //add markdown support to the body of the post
         $post['body'] = Str::markdown($post->body);;
         return view('single-post', ['post' => $post]);

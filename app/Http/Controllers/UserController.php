@@ -8,6 +8,21 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+
+    public function profile(User $user) {
+
+        //this line of code pulls all posts related to the user
+        //its only possible if we define the relationship of the user to the posts
+        //a user can hasMany posts, once a relationship has been set in the model,
+        //we will then have the ability to pull all posts of the user using below code
+        // return $user->posts()->get();
+        return view('profile-posts', [
+            'username' => $user->username, 
+            'posts'=> $user->posts()->latest()->get(),
+            'postCount' => $user->posts()->count()
+        ]);
+    }
+
     public function logout() {
         auth()->logout();
         return redirect('/')->with('success', 'You are now logged out.');
