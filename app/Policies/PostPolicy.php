@@ -53,6 +53,12 @@ class PostPolicy
      */
     public function update(User $user, Post $post)
     {
+
+        //set condition if isAdmin is true - Admin can also update and delete any post
+        if($user->isAdmin === 1) {
+            return true;
+        }
+
         //to allow update we need to check first if the current user is the author of the post
         //don't forget to register this entire policy in Providers folder inside AuthServiceProvider.php
         return $user->id === $post->user_id;
@@ -67,6 +73,11 @@ class PostPolicy
      */
     public function delete(User $user, Post $post)
     {
+         //set condition if isAdmin is true
+        if($user->isAdmin === 1) {
+            return true;
+        }
+
         //to allow delete we need to check first if the current user is the author of the post
         //don't forget to register this entire policy in Providers folder inside AuthServiceProvider.php
         return $user->id === $post->user_id;
