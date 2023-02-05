@@ -5,13 +5,44 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
 
     public function storeAvatar(Request $request) {
-        $request->file('avatar')->store('/public/avatars');
-        return 'hey';
+        $request->validate([
+            'avatar' => 'required|image|max:3000'
+        ]);
+
+        //generate a random file name for the image
+        //access the logged in user
+        $user = auth()->user();
+
+        //store it in a variable
+        $filename = $user->id . '-' . uniqid() . '.jpg';
+
+        //use the package intervention/image
+        //store data first
+        $imgData = Image::make($request->file('avatar'))->fit(120)->encode('jpg');
+        //store the data
+        Storage::put('public/avatars/' . $filename, $imgData);
+
+        $oldAvatar = $user->avatar;
+
+        //update database
+        $user->avatar = $filename; //name of avatar img
+        $user->save();
+
+        //delete old avatars to save space in storage
+        //store old avatar in variable first before the new avatar is saved (e.g. $oldAvatar)
+        if( $oldAvatar != '/fallback-avatar.jpg') {
+            Storage::delete(str_replace('/storage/', 'public/', $oldAvatar));
+        }
+
+        //redirect user back to manage avatar screen
+        return back()->with('success', 'Congrats on the new avatar.');
     }
 
     public function showAvatarForm() {
@@ -26,6 +57,7 @@ class UserController extends Controller
         //we will then have the ability to pull all posts of the user using below code
         // return $user->posts()->get();
         return view('profile-posts', [
+            'avatar' => $user->avatar,
             'username' => $user->username, 
             'posts'=> $user->posts()->latest()->get(),
             'postCount' => $user->posts()->count()

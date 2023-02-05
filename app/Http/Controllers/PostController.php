@@ -44,7 +44,7 @@ class PostController extends Controller
         
         //add markdown support to the body of the post
         $post['body'] = Str::markdown($post->body);;
-        return view('single-post', ['post' => $post]);
+        return view('single-post', ['post' => $post, 'avatar' => auth()->user()->avatar]);
     }
 
 
