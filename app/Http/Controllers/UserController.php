@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -51,12 +52,23 @@ class UserController extends Controller
 
     public function profile(User $user) {
 
+        //condition to check if the current user is following another user
+        //if true, then don't show follow button anymore for that user
+        $currentlyFollowing = 0;
+
+        if(auth()->check()){
+            $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id],['followeduser', '=', $user->id]])->count();
+        }
+
+        
+
         //this line of code pulls all posts related to the user
         //its only possible if we define the relationship of the user to the posts
         //a user can hasMany posts, once a relationship has been set in the model,
         //we will then have the ability to pull all posts of the user using below code
         // return $user->posts()->get();
         return view('profile-posts', [
+            'currentlyFollowing' => $currentlyFollowing,
             'avatar' => $user->avatar,
             'username' => $user->username, 
             'posts'=> $user->posts()->latest()->get(),
