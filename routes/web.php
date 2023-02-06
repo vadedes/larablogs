@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FollowController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,10 @@ Route::get('/', [UserController::class, "showCorrectHomepage"])->name('login');
 Route::post('/register', [UserController::class, 'register'])->middleware('guest');
 Route::post('/login', [UserController::class, 'login'])->middleware('guest');
 Route::post('/logout', [UserController::class, 'logout'])->middleware('MustBeLoggedIn');
+
+//Follow related routes
+Route::post('/create-follow/{user:username}', [FollowController::class, 'createFollow'])->middleware('MustBeLoggedIn');
+Route::post('/remove-follow/{user:username}', [FollowController::class, 'removeFollow'])->middleware('MustBeLoggedIn');
 
 // Blog Post Related Routes
 Route::get('/create-post', [PostController::class, 'showCreateForm'])->middleware('MustBeLoggedIn');
