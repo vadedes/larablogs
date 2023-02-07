@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Follow;
 use App\Models\User;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\View;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -50,31 +51,95 @@ class UserController extends Controller
         return view('avatar-form');
     }
 
-    public function profile(User $user) {
 
-        //condition to check if the current user is following another user
-        //if true, then don't show follow button anymore for that user
+
+    private function getSharedData($user) {
         $currentlyFollowing = 0;
 
-        if(auth()->check()){
-            $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id],['followeduser', '=', $user->id]])->count();
+        if (auth()->check()) {
+            $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id], ['followeduser', '=', $user->id]])->count();
         }
 
-        
-
-        //this line of code pulls all posts related to the user
-        //its only possible if we define the relationship of the user to the posts
-        //a user can hasMany posts, once a relationship has been set in the model,
-        //we will then have the ability to pull all posts of the user using below code
-        // return $user->posts()->get();
-        return view('profile-posts', [
-            'currentlyFollowing' => $currentlyFollowing,
-            'avatar' => $user->avatar,
-            'username' => $user->username, 
-            'posts'=> $user->posts()->latest()->get(),
-            'postCount' => $user->posts()->count()
-        ]);
+        View::share('sharedData', ['currentlyFollowing' => $currentlyFollowing, 'avatar' => $user->avatar, 'username' => $user->username, 'postCount' => $user->posts()->count()]);
     }
+
+
+    public function profile(User $user) {
+        $this->getSharedData($user);
+        return view('profile-posts', ['posts' => $user->posts()->latest()->get()]);
+    }
+
+    public function profileFollowers(User $user) {
+        $this->getSharedData($user);
+        return view('profile-followers', ['posts' => $user->posts()->latest()->get()]);
+    }
+
+    public function profileFollowing(User $user) {
+        $this->getSharedData($user);
+        return view('profile-following', ['posts' => $user->posts()->latest()->get()]);
+    }
+
+
+    // public function profile(User $user) {
+
+    //     //condition to check if the current user is following another user
+    //     //if true, then don't show follow button anymore for that user
+    //     $currentlyFollowing = 0;
+
+    //     if(auth()->check()){
+    //         $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id],['followeduser', '=', $user->id]])->count();
+    //     }
+
+    //     //this line of code pulls all posts related to the user
+    //     //its only possible if we define the relationship of the user to the posts
+    //     //a user can hasMany posts, once a relationship has been set in the model,
+    //     //we will then have the ability to pull all posts of the user using below code
+    //     // return $user->posts()->get();
+    //     return view('profile-posts', [
+    //         'currentlyFollowing' => $currentlyFollowing,
+    //         'avatar' => $user->avatar,
+    //         'username' => $user->username,
+    //         'posts'=> $user->posts()->latest()->get(),
+    //         'postCount' => $user->posts()->count()
+    //     ]);
+    // }
+
+
+    // public function profileFollowers(User $user) {
+
+    //     $currentlyFollowing = 0;
+
+    //     if(auth()->check()){
+    //         $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id],['followeduser', '=', $user->id]])->count();
+    //     }
+
+    //     return view('profile-followers', [
+    //         'currentlyFollowing' => $currentlyFollowing,
+    //         'avatar' => $user->avatar,
+    //         'username' => $user->username,
+    //         'posts'=> $user->posts()->latest()->get(),
+    //         'postCount' => $user->posts()->count()
+    //     ]);
+    // }
+
+    // public function profileFollowing(User $user) {
+
+    //     $currentlyFollowing = 0;
+
+    //     if(auth()->check()){
+    //         $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id],['followeduser', '=', $user->id]])->count();
+    //     }
+
+    //     return view('profile-following', [
+    //         'currentlyFollowing' => $currentlyFollowing,
+    //         'avatar' => $user->avatar,
+    //         'username' => $user->username,
+    //         'posts'=> $user->posts()->latest()->get(),
+    //         'postCount' => $user->posts()->count()
+    //     ]);
+    // }
+
+
 
     public function logout() {
         auth()->logout();

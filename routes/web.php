@@ -19,7 +19,7 @@ use App\Http\Controllers\FollowController;
 
 //admins only route
 Route::get('admin-dashboard', function(){
-    return 'Only admins are allowed to view this route';
+    return 'Welcome! Only admins are allowed to view this route';
 })->middleware('can:visitAdminPages');
 
 // User Related Routes
@@ -44,3 +44,8 @@ Route::put('/post/{post}', [PostController::class, 'updatePost'])->middleware('c
 Route::get('/profile/{user:username}', [UserController::class, 'profile']);
 Route::get('/manage-avatar', [UserController::class, 'showAvatarForm'])->middleware('MustBeLoggedIn');
 Route::post('/manage-avatar', [UserController::class, 'storeAvatar'])->middleware('MustBeLoggedIn');
+Route::get('/profile/{user:username}/followers', [UserController::class, 'profileFollowers']);
+Route::get('/profile/{user:username}/following', [UserController::class, 'profileFollowing']);
+
+
+
