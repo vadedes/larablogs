@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Follow;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -53,6 +54,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    //This relationship means a user has many followers -> followeduser in Follow Table
+    public function followers(){
+        return $this->hasMany(Follow::class, 'followeduser');
+    }
+
+    //this user is following many users -> user_id in Follow table
+    public function followingTheseUsers(){
+        return $this->hasMany(Follow::class, 'user_id');
+    }
+
+    //A user has many posts
     public function posts() {
         return $this->hasMany(Post::class, 'user_id');
     }
