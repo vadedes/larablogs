@@ -9,6 +9,13 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
 
+    public function search($term) {
+        $posts = Post::search($term)->get();
+        $posts->load('user:id,username,avatar');
+        return $posts;
+    }
+
+
     public function updatePost(Post $post, Request $request) {
         //validate request
         $incomingFields = $request->validate([
@@ -40,8 +47,8 @@ class PostController extends Controller
     //second arg on return is the data we're passing to the route
     public function viewSinglePost (Post $post) {
         //check who is the author and only allow author see edit and delete buttons
-        
-        
+
+
         //add markdown support to the body of the post
         $post['body'] = Str::markdown($post->body);;
         return view('single-post', ['post' => $post, 'avatar' => auth()->user()->avatar]);
