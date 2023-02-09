@@ -11,6 +11,10 @@
                     </a>
                 @endforeach
             </div>
+
+            <div class="mt-4">
+                {{$posts->links()}}
+            </div>
         @else
             <div class="text-center">
                 <h2>Hello <strong>{{auth()->user()->username}}</strong>, your feed is empty.</h2>
