@@ -54,6 +54,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
+    //This relationship between users and posts to show posts of users that the user currently follow
+    //on users homepagefeed
+    //has 6 args as follows:
+    //arg 1. Begin with the model that want to end up with - blog posts from the users that current user follows
+    //arg 2. Intermmediate table - table that has the data that we need to look up
+    //arg 3. The foreign key of the intermmediate table
+    //arg 4. The foreign key from the model that we're interested in - from Post model
+    //arg 5. is the local key - we're working on the user model so user is what's local now
+    //arg 6. is the local key on our intermmediate table
+    public function feedPosts() {
+        return $this->hasManyThrough(Post::class, Follow::class, 'user_id', 'user_id', 'id', 'followeduser');
+    }
+
     //This relationship means a user has many followers -> followeduser in Follow Table
     public function followers(){
         return $this->hasMany(Follow::class, 'followeduser');
