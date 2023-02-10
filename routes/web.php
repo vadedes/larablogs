@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\ChatMessage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
@@ -48,5 +50,23 @@ Route::post('/manage-avatar', [UserController::class, 'storeAvatar'])->middlewar
 Route::get('/profile/{user:username}/followers', [UserController::class, 'profileFollowers']);
 Route::get('/profile/{user:username}/following', [UserController::class, 'profileFollowing']);
 
+//Chat routes
 
+Route::post('/send-chat-message', function(Request $request){
+    $formFields = $request->validate([
+        'text-value' => 'required',
 
+    ]);
+
+    if(!trim(strip_tags($formFields('textvalue')))){
+        return response()->noContent();
+    }
+
+    broadcast(new ChatMessage([
+        'username' => auth()->user()->username,
+        'textvalue' => strip_tags($request->textvalue),
+        'avatar' => auth()->user()->avatar
+    ]))->toOthers();
+    return response()->noContent();
+
+})->middleware('MustBeLoggedIn');
