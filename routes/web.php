@@ -49,6 +49,10 @@ Route::get('/manage-avatar', [UserController::class, 'showAvatarForm'])->middlew
 Route::post('/manage-avatar', [UserController::class, 'storeAvatar'])->middleware('MustBeLoggedIn');
 Route::get('/profile/{user:username}/followers', [UserController::class, 'profileFollowers']);
 Route::get('/profile/{user:username}/following', [UserController::class, 'profileFollowing']);
+//Raw data of Profile routes
+Route::get('/profile/{user:username}/raw', [UserController::class, 'profileRaw']);
+Route::get('/profile/{user:username}/followers/raw', [UserController::class, 'profileFollowersRaw']);
+Route::get('/profile/{user:username}/following/raw', [UserController::class, 'profileFollowingRaw']);
 
 //Chat routes
 Route::post('/send-chat-message', function (Request $request) {
