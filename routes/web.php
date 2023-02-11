@@ -44,7 +44,7 @@ Route::put('/post/{post}', [PostController::class, 'updatePost'])->middleware('c
 Route::get('/search/{term}', [PostController::class, 'search']);
 
 //Profile related routes
-Route::get('/profile/{user:username}', [UserController::class, 'profile']);
+Route::get('/profile/{user:username}', [UserController::class, 'profile'])->middleware('MustBeLoggedIn');
 Route::get('/manage-avatar', [UserController::class, 'showAvatarForm'])->middleware('MustBeLoggedIn');
 Route::post('/manage-avatar', [UserController::class, 'storeAvatar'])->middleware('MustBeLoggedIn');
 Route::get('/profile/{user:username}/followers', [UserController::class, 'profileFollowers']);
