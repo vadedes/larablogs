@@ -51,22 +51,16 @@ Route::get('/profile/{user:username}/followers', [UserController::class, 'profil
 Route::get('/profile/{user:username}/following', [UserController::class, 'profileFollowing']);
 
 //Chat routes
-
-Route::post('/send-chat-message', function(Request $request){
+Route::post('/send-chat-message', function (Request $request) {
     $formFields = $request->validate([
-        'text-value' => 'required',
-
+      'textvalue' => 'required'
     ]);
 
-    if(!trim(strip_tags($formFields('textvalue')))){
-        return response()->noContent();
+    if (!trim(strip_tags($formFields['textvalue']))) {
+      return response()->noContent();
     }
 
-    broadcast(new ChatMessage([
-        'username' => auth()->user()->username,
-        'textvalue' => strip_tags($request->textvalue),
-        'avatar' => auth()->user()->avatar
-    ]))->toOthers();
+    broadcast(new ChatMessage(['username' =>auth()->user()->username, 'textvalue' => strip_tags($request->textvalue), 'avatar' => auth()->user()->avatar]))->toOthers();
     return response()->noContent();
 
-})->middleware('MustBeLoggedIn');
+  })->middleware('MustBeLoggedIn');
