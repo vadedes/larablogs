@@ -176,11 +176,27 @@ class UserController extends Controller
             return view('homepage-feed', ['posts' => auth()->user()->feedPosts()->latest()->paginate(6)]);
         } else {
             $postCount = Cache::remember('postCount', 20, function(){
-                sleep(5);
                 return Post::count();
             });
             return view('homepage', ['postCount' => $postCount]);
         }
+    }
+
+    //api access for login function - alt way of logging in
+    public function loginApi(Request $request){
+        $incomingFields = $request->validate([
+            'username' => 'required',
+            'password' => 'required'
+        ]);
+
+        if(auth()->attempt($incomingFields)){
+            $user = User::where('username', $incomingFields['username'])->first();
+
+            $token = $user->createToken('outapptoken')->plainTextToken;
+            return $token;
+        }
+
+        return 'sorry';
     }
 
     public function login(Request $request) {

@@ -86,6 +86,33 @@ class PostController extends Controller
         return redirect("/post/{$newPost->id}")->with('success', 'New post successfully created');
     }
 
+    //store new post using API
+    public function storeNewPostApi(Request $request) {
+        // validate the incoming data first
+        $incomingFields = $request->validate([
+            'title' => 'required',
+            'body' => 'required'
+        ]);
+
+        //strip all incoming field data of tags
+        $incomingFields['title'] = strip_tags($incomingFields['title']);
+        $incomingFields['body'] = strip_tags($incomingFields['body']);
+        //add the author of the post to the array of incoming data
+        //from the auth object
+        $incomingFields['user_id'] = auth()->id();
+
+        //saving to db logic here
+        $newPost = Post::create($incomingFields);
+
+        dispatch(new SendNewPostEmail([
+            'sendTo' => auth()->user()->email,
+            'name' => auth()->user()->username,
+            'title' => $newPost->title,
+        ]));
+
+        return $newPost->id;
+    }
+
     public function showCreateForm () {
         return view('create-post');
     }
